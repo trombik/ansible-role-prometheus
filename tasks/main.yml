@@ -1,0 +1,37 @@
+---
+# tasks file for ansible-role-prometheus
+
+- include_vars: "{{ ansible_os_family }}.yml"
+
+- include: "install-{{ ansible_os_family }}.yml"
+
+- name: Create log directory
+  file:
+    path: "{{ prometheus_log_dir }}"
+    mode: 0755
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    state: directory
+  notify: Restart prometheus
+
+- name: Create db directory
+  file:
+    path: "{{ prometheus_db_dir }}"
+    mode: 0755
+    owner: "{{ prometheus_user }}"
+    group: "{{ prometheus_group }}"
+    state: directory
+  notify: Restart prometheus
+
+- name: Create prometheus.conf
+  template:
+    src: prometheus.conf.j2
+    dest: "{{ prometheus_conf_file }}"
+    validate: echo %s
+  notify: Restart prometheus
+
+- name: Start prometheus
+  service:
+    name: "{{ prometheus_service }}"
+    enabled: true
+    state: started

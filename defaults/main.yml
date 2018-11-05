@@ -1,0 +1,8 @@
+prometheus_user: prometheus
+prometheus_group: prometheus
+prometheus_log_dir: /var/log/prometheus
+prometheus_db_dir: "{{ __prometheus_db_dir }}"
+prometheus_service: prometheus
+prometheus_conf_dir: "{{ __prometheus_conf_dir }}"
+prometheus_conf_file: "{{ __prometheus_conf_dir }}/prometheus.conf"
+prometheus_flags: ""

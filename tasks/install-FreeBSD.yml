@@ -1,0 +1,6 @@
+---
+
+- name: Install prometheus
+  pkgng:
+    name: prometheus
+    state: present

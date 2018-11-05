@@ -1,0 +1,2 @@
+__prometheus_db_dir: /var/db/prometheus
+__prometheus_conf_dir: /usr/local/etc/prometheus

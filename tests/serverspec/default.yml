@@ -1,0 +1,5 @@
+- hosts: localhost
+  roles:
+    - ansible-role-prometheus
+  vars:
+    prometheus_config: ""
