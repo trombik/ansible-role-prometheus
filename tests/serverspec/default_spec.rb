@@ -3,26 +3,46 @@ require "serverspec"
 
 package = "prometheus"
 service = "prometheus"
-config  = "/etc/prometheus/prometheus.conf"
 user    = "prometheus"
 group   = "prometheus"
-ports   = [PORTS]
+ports   = [9090]
+config_dir = "/etc/prometheus"
 log_dir = "/var/log/prometheus"
 db_dir  = "/var/lib/prometheus"
+extra_packages = %w[]
+flags = ""
+default_user = "root"
+default_group = "root"
 
 case os[:family]
 when "freebsd"
-  config = "/usr/local/etc/prometheus.conf"
+  package = "net-mgmt/py-prometheus-client"
+  config_dir = "/usr/local/etc"
   db_dir = "/var/db/prometheus"
+  extra_packages = %w[net-mgmt/py-prometheus-client]
+  flags = 'prometheus_args="--query.max-concurrency=21"'
+  default_group = "wheel"
 end
+config = "#{config_dir}/prometheus.yml"
 
 describe package(package) do
   it { should be_installed }
 end
 
+extra_packages.each do |p|
+  describe package p do
+    it { should be_installed }
+  end
+end
+
 describe file(config) do
+  it { should exist }
   it { should be_file }
-  its(:content) { should match Regexp.escape("prometheus") }
+  it { should be_mode 644 }
+  it { should be_owned_by default_user }
+  it { should be_grouped_into default_group }
+  its(:content) { should match(/^# Managed by ansible$/) }
+  its(:content_as_yaml) { should include("scrape_configs") }
 end
 
 describe file(log_dir) do
@@ -42,7 +62,13 @@ end
 case os[:family]
 when "freebsd"
   describe file("/etc/rc.conf.d/prometheus") do
+    it { should exist }
     it { should be_file }
+    it { should be_mode 644 }
+    it { should be_owned_by default_user }
+    it { should be_grouped_into default_group }
+    its(:content) { should match(/^# Managed by ansible$/) }
+    its(:content) { should match(/^#{flags}$/) }
   end
 end
 

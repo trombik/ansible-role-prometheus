@@ -1,2 +1,7 @@
+__prometheus_user: prometheus
+__prometheus_group: prometheus
+__prometheus_log_dir: /var/log/prometheus
 __prometheus_db_dir: /var/db/prometheus
-__prometheus_conf_dir: /usr/local/etc/prometheus
+__prometheus_package: net-mgmt/prometheus2
+__prometheus_service: prometheus
+__prometheus_conf_dir: /usr/local/etc

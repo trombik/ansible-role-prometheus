@@ -2,7 +2,11 @@ prometheus_user: prometheus
 prometheus_group: prometheus
 prometheus_log_dir: /var/log/prometheus
 prometheus_db_dir: "{{ __prometheus_db_dir }}"
+prometheus_package: "{{ __prometheus_package }}"
 prometheus_service: prometheus
 prometheus_conf_dir: "{{ __prometheus_conf_dir }}"
-prometheus_conf_file: "{{ __prometheus_conf_dir }}/prometheus.conf"
+prometheus_conf_file: "{{ prometheus_conf_dir }}/prometheus.yml"
 prometheus_flags: ""
+prometheus_extra_packages: []
+
+prometheus_config: ""

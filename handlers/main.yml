@@ -2,5 +2,5 @@
 
 - name: Restart prometheus
   service:
-    name: prometheus
+    name: "{{ prometheus_service }}"
     state: restarted
