@@ -22,6 +22,9 @@ when "freebsd"
   extra_packages = %w[net-mgmt/py-prometheus-client]
   flags = 'prometheus_args="--query.max-concurrency=21"'
   default_group = "wheel"
+when "ubuntu"
+  extra_packages = %w[python-prometheus-client]
+  flags = 'ARGS="--query.max-concurrency=21"'
 end
 config = "#{config_dir}/prometheus.yml"
 
@@ -70,6 +73,17 @@ when "freebsd"
     its(:content) { should match(/^# Managed by ansible$/) }
     its(:content) { should match(/^#{flags}$/) }
   end
+when "ubuntu"
+  describe file("/etc/default/prometheus") do
+    it { should exist }
+    it { should be_file }
+    it { should be_mode 644 }
+    it { should be_owned_by default_user }
+    it { should be_grouped_into default_group }
+    its(:content) { should match(/^# Managed by ansible$/) }
+    its(:content) { should match(/^#{flags}$/) }
+  end
+
 end
 
 describe service(service) do

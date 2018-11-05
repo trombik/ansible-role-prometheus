@@ -10,6 +10,9 @@ galaxy_info:
     - name: FreeBSD
       versions:
         - 11.2
+    - name: Ubuntu
+      version:
+        - bionic
   galaxy_tags:
     - prometheus
 dependencies: []
