@@ -25,6 +25,9 @@ when "freebsd"
 when "ubuntu"
   extra_packages = %w[python-prometheus-client]
   flags = 'ARGS="--query.max-concurrency=21"'
+when "openbsd"
+  extra_packages = %w[zsh]
+  flags = "--query.max-concurrency=21"
 end
 config = "#{config_dir}/prometheus.yml"
 
@@ -83,7 +86,15 @@ when "ubuntu"
     its(:content) { should match(/^# Managed by ansible$/) }
     its(:content) { should match(/^#{flags}$/) }
   end
-
+when "openbsd"
+  describe file("/etc/rc.conf.local") do
+    it { should exist }
+    it { should be_file }
+    it { should be_mode 644 }
+    it { should be_owned_by default_user }
+    it { should be_grouped_into default_group }
+    its(:content) { should match(/^prometheus_flags=#{flags}$/) }
+  end
 end
 
 describe service(service) do

@@ -19,3 +19,8 @@
   pkgng:
     name: "{{ prometheus_package }}"
     state: present
+
+- name: Enable prometheus
+  service:
+    name: "{{ prometheus_service }}"
+    enabled: true

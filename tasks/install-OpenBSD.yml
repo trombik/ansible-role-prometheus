@@ -1,26 +1,20 @@
 ---
 
 - name: Install prometheus_extra_packages
-  apt:
+  openbsd_pkg:
     name: "{{ item.name }}"
     state: "{{ item.state | default(omit) }}"
   with_items: "{{ prometheus_extra_packages }}"
 
-- name: Create /etc/default/prometheus
-  template:
-    dest: /etc/default/prometheus
-    src: Debian.default.j2
-    mode: 0644
-    validate: sh -n %s
+- name: Enable prometheus and set flags for prometheus
+  service:
+    name: "{{ prometheus_service }}"
+    enabled: yes
+    arguments: "{{ prometheus_flags }}"
   notify:
     - Restart prometheus
 
 - name: Install prometheus
-  apt:
+  openbsd_pkg:
     name: "{{ prometheus_package }}"
     state: present
-
-- name: Enable prometheus
-  service:
-    name: "{{ prometheus_service }}"
-    enabled: true
