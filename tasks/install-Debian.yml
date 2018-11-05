@@ -1,0 +1,21 @@
+---
+
+- name: Install prometheus_extra_packages
+  apt:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default(omit) }}"
+  with_items: "{{ prometheus_extra_packages }}"
+
+- name: Create /etc/default/prometheus
+  template:
+    dest: /etc/default/prometheus
+    src: Debian.default.j2
+    mode: 0644
+    validate: sh -n %s
+  notify:
+    - Restart prometheus
+
+- name: Install prometheus
+  apt:
+    name: "{{ prometheus_package }}"
+    state: present

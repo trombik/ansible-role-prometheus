@@ -1,0 +1,7 @@
+__prometheus_user: prometheus
+__prometheus_group: prometheus
+__prometheus_log_dir: /var/log/prometheus
+__prometheus_db_dir: /var/lib/prometheus
+__prometheus_package: prometheus
+__prometheus_service: prometheus
+__prometheus_conf_dir: /etc/prometheus

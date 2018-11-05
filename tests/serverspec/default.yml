@@ -5,9 +5,13 @@
     flags_map:
       FreeBSD: |
         prometheus_args="--query.max-concurrency=21"
+      Debian: |
+        ARGS="--query.max-concurrency=21"
     prometheus_flags: "{{ flags_map[ansible_os_family] }}"
 
     extra_package_map:
+      Debian:
+        - name: python-prometheus-client
       FreeBSD:
         - name: net-mgmt/py-prometheus-client
     prometheus_extra_packages: "{{ extra_package_map[ansible_os_family] }}"
