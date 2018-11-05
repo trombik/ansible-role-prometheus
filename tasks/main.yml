@@ -32,5 +32,4 @@
 - name: Start prometheus
   service:
     name: "{{ prometheus_service }}"
-    enabled: true
     state: started
