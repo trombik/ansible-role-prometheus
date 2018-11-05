@@ -2,4 +2,26 @@
   roles:
     - ansible-role-prometheus
   vars:
-    prometheus_config: ""
+    flags_map:
+      FreeBSD: |
+        prometheus_args="--query.max-concurrency=21"
+    prometheus_flags: "{{ flags_map[ansible_os_family] }}"
+
+    extra_package_map:
+      FreeBSD:
+        - name: net-mgmt/py-prometheus-client
+    prometheus_extra_packages: "{{ extra_package_map[ansible_os_family] }}"
+
+    prometheus_config:
+      global:
+        scrape_interval:
+        evaluation_interval:
+      alerting:
+        alertmanagers:
+          - static_configs:
+            - targets:
+      rule_files:
+      scrape_configs:
+        - job_name: 'prometheus'
+          static_configs:
+            - targets: ['localhost:9090']

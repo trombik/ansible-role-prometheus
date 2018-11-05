@@ -1,6 +1,21 @@
 ---
 
+- name: Install prometheus_extra_packages
+  pkgng:
+    name: "{{ item.name }}"
+    state: "{{ item.state | default(omit) }}"
+  with_items: "{{ prometheus_extra_packages }}"
+
+- name: Create /etc/rc.conf.d/prometheus
+  template:
+    dest: /etc/rc.conf.d/prometheus
+    src: FreeBSD.subr.j2
+    mode: 0644
+    validate: sh -n %s
+  notify:
+    - Restart prometheus
+
 - name: Install prometheus
   pkgng:
-    name: prometheus
+    name: "{{ prometheus_package }}"
     state: present
