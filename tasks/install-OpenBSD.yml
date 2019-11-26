@@ -6,6 +6,11 @@
     state: "{{ item.state | default(omit) }}"
   with_items: "{{ prometheus_extra_packages }}"
 
+- name: Install prometheus
+  openbsd_pkg:
+    name: "{{ prometheus_package }}"
+    state: present
+
 - name: Enable prometheus and set flags for prometheus
   service:
     name: "{{ prometheus_service }}"
@@ -13,8 +18,3 @@
     arguments: "{{ prometheus_flags }}"
   notify:
     - Restart prometheus
-
-- name: Install prometheus
-  openbsd_pkg:
-    name: "{{ prometheus_package }}"
-    state: present

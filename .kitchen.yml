@@ -13,7 +13,7 @@ provisioner:
   ansible_verbosity: 1
   ansible_verbose: true
   ansible_extra_flags: <%= ENV['ANSIBLE_EXTRA_FLAGS'] %>
-  # requirements_path: requirements.yml
+  requirements_path: requirements.yml
   http_proxy: <%= ENV['ANSIBLE_PROXY'] %>
   idempotency_test: true
   additional_copy_path:
@@ -21,9 +21,9 @@ provisioner:
     - filter_plugins
 
 platforms:
-  - name: freebsd-11.2-amd64
+  - name: freebsd-12.0-amd64
     driver:
-      box: trombik/ansible-freebsd-11.2-amd64
+      box: trombik/ansible-freebsd-12.0-amd64
       box_check_update: false
     driver_config:
       ssh:
@@ -32,22 +32,34 @@ platforms:
       extra_vars:
         ansible_python_interpreter: '/usr/local/bin/python'
 
-# XXX does not work: rc.d script does not start the daemon
-#  - name: openbsd-6.4-amd64
-#    driver:
-#      box: trombik/ansible-openbsd-6.4-amd64
-#      box_check_update: false
-#    driver_config:
-#      ssh:
-#        shell: '/bin/sh'
-#    provisioner:
-#      extra_vars:
-#        ansible_python_interpreter: '/usr/local/bin/python'
+  - name: openbsd-6.5-amd64
+    driver:
+      box: trombik/ansible-openbsd-6.5-amd64
+      box_check_update: false
+    driver_config:
+      ssh:
+        shell: '/bin/sh'
+    provisioner:
+      extra_vars:
+        ansible_python_interpreter: '/usr/local/bin/python3'
+
+  - name: openbsd-6.6-amd64
+    driver:
+      box: trombik/ansible-openbsd-6.6-amd64
+      box_check_update: false
+    driver_config:
+      ssh:
+        shell: '/bin/sh'
+    provisioner:
+      extra_vars:
+        ansible_python_interpreter: '/usr/local/bin/python3'
 
   - name: ubuntu-18.04-amd64
     driver:
       box: trombik/ansible-ubuntu-18.04-amd64
       box_check_update: false
+
+# no official, or EPEL, packages for CentOS
 
 suites:
   - name: default
