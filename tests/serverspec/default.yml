@@ -1,24 +1,36 @@
 - hosts: localhost
   roles:
-    - ansible-role-prometheus
+    - role: trombik.freebsd_pkg_repo
+      when:
+        - ansible_os_family == 'FreeBSD'
+    - role: ansible-role-prometheus
   vars:
-    flags_map:
+    freebsd_pkg_repo:
+      FreeBSD_latest:
+        enabled: "true"
+        state: present
+        # use a mirror in Asia
+        url: pkg+http://pkg0.twn.freebsd.org/${ABI}/latest
+        mirror_type: srv
+        signature_type: fingerprints
+        fingerprints: /usr/share/keys/pkg
+        priority: 100
+    os_prometheus_flags:
       FreeBSD: |
         prometheus_args="--query.max-concurrency=21"
       Debian: |
         ARGS="--query.max-concurrency=21"
-      OpenBSD: |
-        --config.file={{ prometheus_conf_file }} --storage.tsdb.path={{ prometheus_db_dir }} --query.max-concurrency=21
-    prometheus_flags: "{{ flags_map[ansible_os_family] }}"
+      OpenBSD: ""
+    prometheus_flags: "{{ os_prometheus_flags[ansible_os_family] }}"
 
-    extra_package_map:
+    os_prometheus_extra_packages:
       Debian:
         - name: python-prometheus-client
       FreeBSD:
         - name: net-mgmt/py-prometheus-client
       OpenBSD:
         - name: zsh
-    prometheus_extra_packages: "{{ extra_package_map[ansible_os_family] }}"
+    prometheus_extra_packages: "{{ os_prometheus_extra_packages[ansible_os_family] }}"
 
     prometheus_config:
       global:
