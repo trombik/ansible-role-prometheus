@@ -1,0 +1,11 @@
+---
+
+freebsd_pkg_repo:
+  FreeBSD_latest:
+    enabled: "true"
+    state: present
+    url: pkg+http://pkg0.twn.freebsd.org/${ABI}/latest
+    mirror_type: srv
+    signature_type: fingerprints
+    fingerprints: /usr/share/keys/pkg
+    priority: 100

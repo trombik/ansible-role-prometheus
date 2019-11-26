@@ -1,0 +1,42 @@
+---
+
+# ________________________________________blackbox_exporter
+os_blackbox_exporter_flags:
+  FreeBSD: |
+    blackbox_exporter_listen_address={{ ansible_em1['ipv4'][0]['address'] | default('') }}:9115
+    blackbox_exporter_log_file={{ blackbox_exporter_log_dir }}/blackbox_exporter.log
+  Debian: |
+    ARGS="--config.file=/etc/prometheus/blackbox.yml --web.listen-address={{ ansible_eth1['ipv4']['address'] | default('') }}:9115"
+blackbox_exporter_flags: "{{ os_blackbox_exporter_flags[ansible_os_family] }}"
+
+blackbox_exporter_config:
+  modules:
+    http_2xx:
+      prober: http
+      http:
+        preferred_ip_protocol: "ip4"
+        ip_protocol_fallback: false
+    tls_connect:
+      prober: tcp
+      timeout: 5s
+      tcp:
+        tls: true
+        preferred_ip_protocol: "ip4"
+        ip_protocol_fallback: false
+    dns_udp_a:
+      prober: dns
+      timeout: 5s
+      dns:
+        query_name: "www.prometheus.io"
+        query_type: "A"
+        valid_rcodes:
+          - NOERROR
+        preferred_ip_protocol: "ip4"
+        ip_protocol_fallback: false
+    dns_udp_soa:
+      prober: dns
+      dns:
+        query_name: "prometheus.io"
+        query_type: "SOA"
+        preferred_ip_protocol: "ip4"
+        ip_protocol_fallback: false

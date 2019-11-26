@@ -1,0 +1,11 @@
+---
+
+- name: trombik.freebsd_pkg_repo
+- name: trombik.apt_repo
+- name: trombik.redhat_repo
+- name: trombik.grafana
+- name: trombik.node_exporter
+- name: trombik.influxdb
+- name: trombik.blackbox_exporter
+  src: https://github.com/trombik/ansible-role-blackbox_exporter
+  scm: git

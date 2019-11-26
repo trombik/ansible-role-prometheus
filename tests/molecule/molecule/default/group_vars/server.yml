@@ -1,0 +1,176 @@
+---
+os_prometheus_flags:
+  FreeBSD: |
+    prometheus_args="--query.max-concurrency=21"
+  Debian: |
+    ARGS="--query.max-concurrency=21"
+  OpenBSD: |
+    --config.file={{ prometheus_conf_file }} --storage.tsdb.path={{ prometheus_db_dir }} --query.max-concurrency=21
+prometheus_flags: "{{ os_prometheus_flags[ansible_os_family] }}"
+
+os_prometheus_extra_packages:
+  Debian:
+    - name: python-prometheus-client
+  FreeBSD:
+    - name: net-mgmt/py-prometheus-client
+  OpenBSD:
+    - name: zsh
+prometheus_extra_packages: "{{ os_prometheus_extra_packages[ansible_os_family] }}"
+
+prometheus_config:
+  global:
+    scrape_interval: 15s
+    evaluation_interval: 15s
+  alerting:
+    alertmanagers:
+  rule_files: []
+  scrape_configs:
+    - job_name: blackbox_http_2xx
+      metrics_path: /probe
+      params:
+        module: [http_2xx]
+      static_configs:
+        - targets:
+            - http://prometheus.io
+            - https://prometheus.io
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: '192.168.21.100:9115'
+
+    - job_name: blackbox_dns_udp_a
+      metrics_path: /probe
+      params:
+        module: [dns_udp_a]
+      static_configs:
+        - targets:
+            - 8.8.8.8
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: '192.168.21.100:9115'
+
+    - job_name: blackbox_dns_udp_soa
+      metrics_path: /probe
+      params:
+        module: [dns_udp_soa]
+      static_configs:
+        - targets:
+            - 8.8.8.8
+      relabel_configs:
+        - source_labels: [__address__]
+          target_label: __param_target
+        - source_labels: [__param_target]
+          target_label: instance
+        - target_label: __address__
+          replacement: '192.168.21.100:9115'
+
+    - job_name: node
+      static_configs:
+        - targets:
+            - "192.168.21.100:9100"
+            - "192.168.21.200:9100"
+          labels:
+            group: node
+    - job_name: prometheus
+      static_configs:
+        - targets: ['localhost:9090']
+    - job_name: grafana
+      static_configs:
+        - targets:
+            - localhost:3000
+grafana_extra_packages: []
+grafana_plugins:
+  - name: grafana-clock-panel
+    state: present
+flags:
+  FreeBSD: |
+    grafana_conf="{{ grafana_conf_file }}"
+
+grafana_flags: "{{ flags[ansible_os_family] }}"
+grafana_admin_user: admin
+grafana_admin_password: PassWord
+grafana_addr: "{{ ansible_default_ipv4['address'] }}"
+grafana_config: |
+  [paths]
+  data = {{ grafana_db_dir }}
+  logs = {{ grafana_log_dir }}
+  plugins = {{ grafana_db_dir }}/plugins
+  provisioning = {{ grafana_provisioning_dir }}
+  [server]
+  [database]
+  log_queries =
+  [session]
+  [dataproxy]
+  [analytics]
+  [security]
+  admin_user = {{ grafana_admin_user }}
+  admin_password = {{ grafana_admin_password }}
+  disable_gravatar = true
+  [snapshots]
+  [dashboards]
+  [users]
+  [auth]
+  [auth.anonymous]
+  [auth.github]
+  [auth.google]
+  [auth.generic_oauth]
+  [auth.grafana_com]
+  [auth.proxy]
+  [auth.basic]
+  [auth.ldap]
+  [smtp]
+  [emails]
+  [log]
+  [log.console]
+  [log.file]
+  [log.syslog]
+  [alerting]
+  [metrics]
+  [metrics.graphite]
+  [tracing.jaeger]
+  [grafana_com]
+  [external_image_storage]
+  [external_image_storage.s3]
+  [external_image_storage.webdav]
+  [external_image_storage.gcs]
+  [external_image_storage.azure_blob]
+  [external_image_storage.local]
+influxdb_config: |
+  reporting-disabled = true
+  bind-address = "{{ influxdb_bind_address }}"
+  [meta]
+    dir = "{{ influxdb_db_dir }}/meta"
+  [data]
+    dir = "{{ influxdb_db_dir }}/data"
+    wal-dir = "{{ influxdb_db_dir }}/wal"
+  [coordinator]
+  [retention]
+  [shard-precreation]
+  [monitor]
+  [http]
+  [ifql]
+  [logging]
+  [subscriber]
+  [[graphite]]
+  [[collectd]]
+  [[opentsdb]]
+  [[udp]]
+  [tls]
+grafana_provisioning_files:
+  - name: datasources/prometheus.yml
+    state: present
+    format: yaml
+    content:
+      apiVersion: 1
+      datasources:
+        - name: Prometheus on localhost
+          type: prometheus
+          access: proxy
+          url: http://localhost:9090

@@ -1,0 +1,4 @@
+---
+
+node_exporter_flags: |
+  node_exporter_listen_address="{{ ansible_em1['ipv4'][0]['address'] }}:9100"
