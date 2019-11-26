@@ -1,3 +1,4 @@
+---
 prometheus_user: "{{ __prometheus_user }}"
 prometheus_group: "{{ __prometheus_group }}"
 prometheus_log_dir: /var/log/prometheus
